@@ -50,6 +50,16 @@ class market_income(Variable):
     entity = Person
     label = u"Market income"
     definition_period = YEAR
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=["employment_income", "self_employment_income"],
+                is_addition=True,
+                includes_earnings=True,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         return (
@@ -97,6 +107,16 @@ class net_income(Variable):
     entity = Person
     label = u"Net income"
     definition_period = YEAR
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=["market_income", "benefits", "tax"],
+                is_addition=True,
+                includes_earnings=True,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         return person("gross_income", period) - person("tax", period)

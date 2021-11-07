@@ -30,6 +30,10 @@ class employment_income(Variable):
                 child=dict(
                     max=20000,
                 ),
+            ),
+            accounting=dict(
+                is_addition=True,
+                includes_earnings=True,
             )
         )
     )
@@ -50,7 +54,7 @@ class pension_income(Variable):
                     max=80000,
                 ),
                 child=dict(
-                    hidden=True,
+                    inputtable=False,
                 ),
             )
         )
@@ -90,8 +94,11 @@ class self_employment_income(Variable):
                     max=80000,
                 ),
                 child=dict(
-                    hidden=True,
+                    inputtable=False,
                 ),
+            ),
+            accounting=dict(
+                includes_earnings=False,
             )
         )
     )
@@ -112,7 +119,7 @@ class property_income(Variable):
                     max=80000,
                 ),
                 child=dict(
-                    hidden=True,
+                    inputtable=False,
                 ),
             )
         )
@@ -134,7 +141,7 @@ class savings_interest_income(Variable):
                     max=80000,
                 ),
                 child=dict(
-                    hidden=True,
+                    inputtable=False,
                 ),
             )
         )
@@ -157,7 +164,7 @@ class dividend_income(Variable):
                     max=80000,
                 ),
                 child=dict(
-                    hidden=True,
+                    inputtable=False,
                 ),
             ),
         )

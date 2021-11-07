@@ -7,6 +7,15 @@ class tax(Variable):
     entity = Person
     label = u"Total tax"
     definition_period = YEAR
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=["income_tax", "national_insurance"],
+                is_addition=False,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         return person("income_tax", period) + person(

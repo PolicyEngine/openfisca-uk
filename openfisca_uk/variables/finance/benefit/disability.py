@@ -11,7 +11,7 @@ class is_disabled_for_benefits(Variable):
     reference = "Child Tax Credit Regulations 2002 s. 8"
     metadata = dict(
         policyengine=dict(
-            hidden=True,
+            inputtable=False,
             roles=dict(
                 child=dict(
                     hidden=False,
@@ -56,7 +56,7 @@ class is_severely_disabled_for_benefits(Variable):
     reference = "Child Tax Credit Regulations 2002 s. 8"
     metadata = dict(
         policyengine=dict(
-            hidden=True,
+            inputtable=False,
             roles=dict(
                 child=dict(
                     hidden=False,

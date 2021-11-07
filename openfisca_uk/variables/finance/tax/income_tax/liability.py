@@ -517,6 +517,15 @@ class income_tax(Variable):
     label = u"Income Tax"
     definition_period = YEAR
     reference = "Income Tax Act 2007 s. 23"
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=[],
+                is_addition=False,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         return max_(

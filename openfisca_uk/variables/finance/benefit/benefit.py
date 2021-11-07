@@ -9,8 +9,18 @@ This file contains variables that are commonly used in benefit eligibility calcu
 class family_benefits(Variable):
     value_type = float
     entity = Person
-    label = u"Total simulated family benefits for this person"
+    label = u"Family benefits"
     definition_period = YEAR
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=[],
+                is_addition=True,
+                includes_earnings=False,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         FAMILY_BENEFITS = [
@@ -66,6 +76,16 @@ class benefits(Variable):
     entity = Person
     label = u"Total benefits"
     definition_period = YEAR
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=["personal_benefits", "family_benefits"],
+                is_addition=True,
+                includes_earnings=False,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         return person("personal_benefits", period) + person(
@@ -213,8 +233,18 @@ class is_single_person(Variable):
 class personal_benefits(Variable):
     value_type = float
     entity = Person
-    label = u"Value of personal, non-means-tested benefits"
+    label = u"Personal benefits"
     definition_period = YEAR
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=[],
+                is_addition=True,
+                includes_earnings=False,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         BENEFITS = [

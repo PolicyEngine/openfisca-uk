@@ -323,7 +323,7 @@ class limited_capability_for_WRA(Variable):
             default=False,
             roles=dict(
                 child=dict(
-                    hidden=True,
+                    inputtable=False,
                 )
             ),
         )

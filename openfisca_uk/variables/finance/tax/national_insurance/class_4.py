@@ -55,6 +55,15 @@ class national_insurance(Variable):
     label = u"National Insurance"
     definition_period = YEAR
     reference = "Social Security and Benefits Act 1992 s. 1(2)"
+    metadata = dict(
+        policyengine=dict(
+            inputtable=False,
+            accounting=dict(
+                components=[],
+                is_addition=False,
+            )
+        )
+    )
 
     def formula(person, period, parameters):
         CLASSES = ["employee_NI", "self_employed_NI"]

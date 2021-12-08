@@ -35,7 +35,10 @@ class benunit_tax(Variable):
     definition_period = YEAR
 
     def formula(benunit, period, parameters):
-        return benunit.sum(benunit.members("tax", period))
+        return benunit.sum(
+            benunit.members("income_tax", period)
+            + benunit.members("national_insurance", period)
+        )
 
 
 class tax_reported(Variable):

@@ -54,10 +54,18 @@ class HouseholdWeights:
         start_train_loss = None
         start_val_loss = None
         start_time = time()
+        frs_weights = np.array(
+            [
+                self.sim.calc("household_weight", year).values
+                for year in range(self.start_year, self.end_year + 1)
+            ]
+        )
         for epoch in range(num_epochs):
             with tf.GradientTape() as tape:
+                adjusted_weights = tf.nn.relu(frs_weights + self.weight_changes)
+                self.adjusted_weights = adjusted_weights
                 loss = loss_calculator.compute_loss(
-                    self.weight_changes, validation=False, epoch=epoch
+                    adjusted_weights, validation=False, epoch=epoch
                 )
                 grads = tape.gradient(loss, self.weight_changes)
             if validation_split > 0:
@@ -79,40 +87,21 @@ class HouseholdWeights:
             print(
                 f"{time_str}, train loss = {loss.numpy() / start_train_loss - 1:.4%}, validation_loss = {validation_loss.numpy() / start_val_loss - 1:.4%}, train + validation loss = {(loss.numpy() + validation_loss.numpy()) / (start_train_loss + start_val_loss) - 1:.4%}"
             )
-            if epoch > 0 and epoch % 20 == 0:
+            if epoch > 0 and epoch % 5 == 0:
                 self.training_log = loss_calculator.training_log
                 self.save()
 
         self.training_log = loss_calculator.training_log
 
-    def get_microsimulation(self):
-        sim_reweighted = Microsimulation(
-            adjust_weights=False, duplicate_records=2
-        )
-        for year in range(self.start_year, self.end_year + 1):
-            new_weights = np.maximum(
-                0,
-                self.sim.calc("household_weight", period=year).values
-                + self.weight_changes[year - self.start_year],
-            )
-            sim_reweighted.set_input(
-                "household_weight",
-                year,
-                new_weights,
-            )
-        return sim_reweighted
-
     def save(self, folder: Path = REPO / "calibration", run_id: str = 1):
         if isinstance(folder, str):
             folder = Path(folder)
-
-        sim = self.get_microsimulation()
 
         with h5py.File(folder / "frs_weights.h5", "w") as f:
             for year in range(self.start_year, self.end_year + 1):
                 f.create_dataset(
                     f"{year}",
-                    data=sim.calc("household_weight", period=year).values,
+                    data=self.adjusted_weights[year - self.start_year].numpy(),
                 )
 
         log = pd.DataFrame(self.training_log)
@@ -138,7 +127,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--learning-rate",
         type=float,
-        default=2e3,
+        default=6e3,
         help="Learning rate for optimiser",
     )
     parser.add_argument(
@@ -151,7 +140,7 @@ if __name__ == "__main__":
 
     if args.k_fold_cross_validation > 1:
         sim = Microsimulation(
-            average_parameters=True, adjust_weights=False, duplicate_records=2
+            average_parameters=True, adjust_weights=False, duplicate_records=True
         )
         loss_calculators = LossCalculator.create_k_fold_cv_calculators(
             sim, k=args.k_fold_cross_validation

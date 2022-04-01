@@ -21,7 +21,7 @@ def weighted_squared_relative_deviation(
         tf.Tensor: The weighted squared relative deviation.
     """
     if actual == 0:
-        return tf.constant(0, dtype=tf.float32)
+        actual = pred / 1e3
     return ((pred / actual) - 1) ** 2 * actual
 
 
@@ -47,7 +47,7 @@ class LossCategory:
     label: str
     category: str
     parameter_folder: ParameterNode
-    years: List[int] = [2019, 2020, 2021, 2022]
+    years: List[int] = list(range(2019, 2027))
     comparison_loss_function: Callable = weighted_squared_relative_deviation
     initial_train_loss: float = None
     initial_val_loss: float = None

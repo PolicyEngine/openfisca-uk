@@ -39,22 +39,16 @@ class BudgetaryImpactOfIncomeTaxByIncomeBand(LossCategory):
             )
             aggregate = tf.reduce_sum(household_weights * household_income_tax)
             target = brackets[i].amount(instant_str)
-            if person_in_range.sum() > 0:
-                # If the FRS does not have any observations, skip the target.
-                yield brackets[i].name + "." + str(year), aggregate, target
+            yield brackets[i].name + "." + str(year), aggregate, target
 
     def get_metrics():
         return (
-            BudgetaryImpactOfIncomeTaxByIncomeBand.parameter_folder.brackets[
-                :-3
-            ]
+            BudgetaryImpactOfIncomeTaxByIncomeBand.parameter_folder.brackets
         )
 
     def get_metric_names():
         return [
             bracket.name + "." + str(year)
-            for bracket in BudgetaryImpactOfIncomeTaxByIncomeBand.parameter_folder.brackets[
-                :-3
-            ]
-            for year in range(2019, 2023)
+            for bracket in BudgetaryImpactOfIncomeTaxByIncomeBand.parameter_folder.brackets
+            for year in range(2019, 2027)
         ]

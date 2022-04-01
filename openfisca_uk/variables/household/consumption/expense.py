@@ -196,3 +196,19 @@ class council_tax_band(Variable):
     entity = Household
     label = "Council Tax Band"
     definition_period = YEAR
+
+
+class petrol_spending(Variable):
+    label = "Petrol spending"
+    entity = Household
+    definition_period = YEAR
+    value_type = float
+    unit = "currency-GBP"
+
+
+class diesel_spending(Variable):
+    label = "Petrol spending"
+    entity = Household
+    definition_period = YEAR
+    value_type = float
+    unit = "currency-GBP"

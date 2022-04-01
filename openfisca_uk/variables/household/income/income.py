@@ -225,6 +225,21 @@ class household_net_income(Variable):
         return gross_income - tax
 
 
+class income_decile(Variable):
+    label = "Household net income decile"
+    entity = Household
+    definition_period = YEAR
+    value_type = float
+    unit = "currency-GBP"
+
+    def formula(household, period, parameters):
+        from microdf import MicroSeries
+        weights = household.sum(household.members("person_weight", period))
+        income_value = max_(0, household("household_net_income", period))
+        income = MicroSeries(income_value, weights=weights)
+        return income.decile_rank()
+
+
 class real_household_net_income(Variable):
     label = "Real household net income"
     documentation = "Disposable income in January 2015 prices"

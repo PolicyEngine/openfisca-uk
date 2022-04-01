@@ -76,7 +76,7 @@ class Microsimulation(GeneralMicrosimulation):
         reform: ReformType = (),
         dataset: type = None,
         year: int = None,
-        duplicate_records: bool = False,
+        duplicate_records: bool = True,
         adjust_weights: bool = True,
         average_parameters: bool = False,
         add_baseline_benefits: bool = True,
@@ -116,7 +116,7 @@ class Microsimulation(GeneralMicrosimulation):
                     )
                     dataset.download(year)
 
-        if (dataset.name == "frs_enhanced") and duplicate_records:
+        if ("frs" in dataset.name) and duplicate_records:
             data = dataset.load(year)
             num_duplications = 2
 
@@ -130,7 +130,7 @@ class Microsimulation(GeneralMicrosimulation):
                 elif "_weight" in key:
                     return (
                         np.concatenate(tuple([values] * num_duplications))
-                        / duplicate_records
+                        / num_duplications
                     )
                 else:
                     return np.concatenate(tuple([values] * num_duplications))
@@ -163,9 +163,9 @@ class Microsimulation(GeneralMicrosimulation):
             dataset = ProxyDataset
 
         super().__init__(reform=reform, dataset=dataset, year=year)
-
+        print(f"UC before reweighting = {self.calc('universal_credit').sum():,}")
         if (
-            ("frs_enhanced" in dataset.name)
+            ("frs" in dataset.name)
             and adjust_weights
             and year >= 2019
         ):
@@ -192,13 +192,14 @@ class Microsimulation(GeneralMicrosimulation):
                         "benunit_weight",
                         year,
                         self.calc(
-                            "household_weight", period=year, map_to="benunit"
+                            "person_weight", period=year, map_to="benunit", how="max",
                         ).values,
                     )
 
             # Add baseline benefits
+        print(f"UC after reweighting = {self.calc('universal_credit').sum():,}")
 
-        if add_baseline_benefits:
+        if add_baseline_benefits and adjust_weights and ("frs" in dataset.name) and (dataset.name != "synth_frs"):
             filepath = REPO / "data" / "baseline_variables.h5"
             if filepath.exists():
                 with h5py.File(filepath, "r") as f:

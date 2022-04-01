@@ -28,7 +28,7 @@ class would_claim_PC(Variable):
 
     def formula(benunit, period, parameters):
         reported_pc = aggr(benunit, period, ["pension_credit_reported"]) > 0
-        return reported_pc | benunit("claims_all_entitled_benefits", period)
+        return True#reported_pc | benunit("claims_all_entitled_benefits", period)
 
 
 class pension_credit_eligible(Variable):
@@ -39,10 +39,7 @@ class pension_credit_eligible(Variable):
 
     def formula(benunit, period):
         person_is_SP_age = benunit.members("is_SP_age", period)
-        all_SP_age = benunit.all(person_is_SP_age)
-        any_SP_age = benunit.any(person_is_SP_age)
-        claiming_HB = benunit("housing_benefit", period) > 0
-        return all_SP_age | (any_SP_age & claiming_HB)
+        return benunit.any(person_is_SP_age)
 
 
 class pension_credit_MG(Variable):
@@ -95,7 +92,6 @@ class guarantee_credit_applicable_income(Variable):
             "child_benefit",
             "child_tax_credit",
             "working_tax_credit",
-            "housing_benefit",
         ]
         benefits = add(benunit, period, BENEFIT_COMPONENTS)
         return max_(income + benefits - tax, 0)
@@ -111,7 +107,7 @@ class pension_credit_GC(Variable):
     def formula(benunit, period, parameters):
         income = benunit("guarantee_credit_applicable_income", period)
         amount = max_(0, benunit("pension_credit_MG", period) - income)
-        return benunit("pension_credit_eligible", period) * amount
+        return amount
 
 
 class savings_credit_applicable_income(Variable):
@@ -171,7 +167,7 @@ class pension_credit_SC(Variable):
         )
         amount_B = max_(income - appropriate_amount, 0) * SC.withdrawal_rate
         amount = max_(amount_A - amount_B, 0)
-        return amount * benunit("pension_credit_eligible", period)
+        return amount
 
 
 class pension_credit(Variable):
@@ -185,4 +181,4 @@ class pension_credit(Variable):
         COMPONENTS = ["pension_credit_GC", "pension_credit_SC"]
         return add(benunit, period, COMPONENTS) * benunit(
             "would_claim_PC", period
-        )
+        ) * benunit("pension_credit_eligible", period)

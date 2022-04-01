@@ -59,6 +59,16 @@ class would_claim_UC(Variable):
         current_uc_claimant = (
             aggr(benunit, period, ["universal_credit_reported"]) > 0
         )
+        has_any_legacy_benefit_reported = add(benunit, period, [
+            variable + "_reported"
+            for variable in [
+                "child_tax_credit",
+                "working_tax_credit",
+                "housing_benefit",
+                "income_support",
+                "ESA_income",
+                "JSA_income",
+            ]]) > 0
         would_make_new_claim = (
             claims_all_entitled_benefits & ~on_legacy_benefits
         )
@@ -68,7 +78,8 @@ class would_claim_UC(Variable):
             [
                 current_uc_claimant
                 | (~on_legacy_benefits & would_have_claimed_legacy_benefits)
-                | would_make_new_claim,
+                | would_make_new_claim
+                | (has_any_legacy_benefit_reported & ~on_legacy_benefits),
                 ~baseline_uc,
                 True,
             ],

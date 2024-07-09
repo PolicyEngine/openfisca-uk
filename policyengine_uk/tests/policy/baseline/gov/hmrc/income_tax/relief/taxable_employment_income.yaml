@@ -1,0 +1,88 @@
+- name: No income, no deductions, no benefits
+  period: 2024
+  input:
+    employment_income: 0
+    employment_deductions: 0
+    employment_benefits: 0
+  output:
+    taxable_employment_income: 0
+
+- name: Standard case with all positive values
+  period: 2024
+  input:
+    employment_income: 50000
+    employment_deductions: 5000
+    employment_benefits: 2000
+  output:
+    taxable_employment_income: 47000
+
+- name: High income with high deductions and benefits
+  period: 2024
+  input:
+    employment_income: 100000
+    employment_deductions: 20000
+    employment_benefits: 15000
+  output:
+    taxable_employment_income: 95000
+
+- name: Only employment income, no deductions or benefits
+  period: 2024
+  input:
+    employment_income: 30000
+    employment_deductions: 0
+    employment_benefits: 0
+  output:
+    taxable_employment_income: 30000
+
+- name: Only employment benefits, no income or deductions
+  period: 2024
+  input:
+    employment_income: 0
+    employment_deductions: 0
+    employment_benefits: 5000
+  output:
+    taxable_employment_income: 5000
+
+- name: Deductions exceed income and benefits (testing max function)
+  period: 2024
+  input:
+    employment_income: 20000
+    employment_deductions: 25000
+    employment_benefits: 3000
+  output:
+    taxable_employment_income: 0
+
+- name: Edge case with very high values
+  period: 2024
+  input:
+    employment_income: 1000000
+    employment_deductions: 200000
+    employment_benefits: 100000
+  output:
+    taxable_employment_income: 900000
+
+- name: Edge case with very low positive values
+  period: 2024
+  input:
+    employment_income: 1
+    employment_deductions: 0
+    employment_benefits: 0
+  output:
+    taxable_employment_income: 1
+
+- name: Deductions from employment
+  period: 2020
+  absolute_error_margin: 0
+  input:
+    employment_income: 15000
+    employment_deductions: 5000
+  output:
+    taxable_employment_income: 10000
+- name: Deductions from employment stay positive
+  period: 2020
+  absolute_error_margin: 0
+  input:
+    employment_income: 15000
+    employment_deductions: 25000
+  output:
+    taxable_employment_income: 0

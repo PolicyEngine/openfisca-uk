@@ -13,69 +13,6 @@ Not all reliefs are calculated here - only the major ones.
 
 
 
-class employment_benefits(Variable):
-    value_type = float
-    entity = Person
-    label = "Employment benefits"
-    definition_period = YEAR
-    unit = GBP
-
-    adds = ["SSP", "SMP"]
-
-
-class SMP(Variable):
-    value_type = float
-    entity = Person
-    label = "Statutory Maternity Pay"
-    definition_period = YEAR
-    unit = GBP
-
-
-class SSP(Variable):
-    value_type = float
-    entity = Person
-    label = "Statutory Sick Pay"
-    definition_period = YEAR
-    unit = GBP
-
-
-class employment_deductions(Variable):
-    value_type = float
-    entity = Person
-    label = "Deductions from employment income"
-    definition_period = YEAR
-    reference = "Income Tax Act (Earnings and Pensions) Act 2003 s. 327"
-    unit = GBP
-
-    adds = ["employment_expenses"]
-
-
-class employment_expenses(Variable):
-    value_type = float
-    entity = Person
-    label = (
-        "Cost of expenses necessarily incurred and reimbursed by employment"
-    )
-    definition_period = YEAR
-    reference = "Income Tax Act (Earnings and Pensions) Act 2003 s. 333"
-    unit = GBP
-
-
-class pension_contributions(Variable):
-    value_type = float
-    entity = Person
-    label = "Amount contributed to registered pension schemes paid by the individual (not the employer)"
-    definition_period = YEAR
-    unit = GBP
-
-    def formula(person, period, parameters):
-        PENSIONS = [
-            "private_pension_contributions",
-            "occupational_pension_contributions",
-        ]
-        return add(person, period, PENSIONS)
-
-
 class pension_contributions_relief(Variable):
     value_type = float
     entity = Person

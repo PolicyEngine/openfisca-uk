@@ -1,8 +1,8 @@
 from policyengine_uk.model_api import *
 
 
-class severe_disability_minimum_guarantee_addition(Variable):
-    label = "Severe disability-related increase"
+class pension_credit_severe_disability_minimum_guarantee_addition_eligible(Variable):
+    label = "Pension Credit severe disability-related increase"
     entity = BenUnit
     definition_period = YEAR
     value_type = float
@@ -24,19 +24,11 @@ class severe_disability_minimum_guarantee_addition(Variable):
             add(person, period, relevant_benefits) > 0
         )
         is_adult = person("is_adult", period)
-        count_eligible_adults = benunit.sum(
-            is_adult & person_receives_qualifying_benefits
-        )
+
         any_children_without_benefits = (
             benunit.sum(~is_adult & ~person_receives_qualifying_benefits) > 0
         )
         carers_allowance_received = (
             add(benunit, period, ["carers_allowance"]) > 0
         )
-        eligible = ~any_children_without_benefits & ~carers_allowance_received
-        return (
-            eligible
-            * count_eligible_adults
-            * severe_disability.addition
-            * WEEKS_IN_YEAR
-        )
+        return ~any_children_without_benefits & ~carers_allowance_received

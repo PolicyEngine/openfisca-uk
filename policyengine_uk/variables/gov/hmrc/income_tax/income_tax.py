@@ -22,5 +22,4 @@ class income_tax(Variable):
     subtracts = [
         "capped_mcad",
         "deficiency_relief",
-        "loss_relief"
     ]
